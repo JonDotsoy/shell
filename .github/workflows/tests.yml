@@ -12,15 +12,35 @@ jobs:
       - uses: actions/checkout@v4
       - uses: asdf-vm/actions/install@v4
         with:
-          tool_versions: |
-            nodejs 16.20.2
-            nodejs 18.20.8
-            nodejs 20.19.5
-            nodejs 22.19.0
-            nodejs 22.19.0
-            nodejs 24.7.0
-            bun 1.2.21
-            deno 2.4.5
+          skip_install: true
+          # tool_versions: |
+          #   nodejs 16.20.2
+          #   nodejs 18.20.8
+          #   nodejs 20.19.5
+          #   nodejs 22.19.0
+          #   nodejs 22.19.0
+          #   nodejs 24.7.0
+          #   bun 1.2.21
+          #   deno 2.4.5
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.asdf/downloads
+            ~/.asdf/installs
+            ~/.asdf/plugins
+          key: ${{ runner.os }}-asdf
+      - run: |
+          asdf plugin add nodejs
+          asdf plugin add bun
+          asdf plugin add deno
+          asdf install nodejs 16.20.2
+          asdf install nodejs 18.20.8
+          asdf install nodejs 20.19.5
+          asdf install nodejs 22.19.0
+          asdf install nodejs 22.19.0
+          asdf install nodejs 24.7.0
+          asdf install bun 1.2.21
+          asdf install deno 2.4.5
       - name: Install dependencies
         run: bun install
       - name: Run tests
