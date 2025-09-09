@@ -33,53 +33,21 @@ export class ShellResponse {
    * @returns This ShellResponse instance for method chaining
    */
   verbose() {
-    let stdoutCtrl: ReadableStreamDefaultController<unknown>;
-    let stderrCtrl: ReadableStreamDefaultController<unknown>;
-
-    const stdoutReadable = new ReadableStream({
-      start(controller) {
-        stdoutCtrl = controller;
-      },
-    });
-
-    const stderrReadable = new ReadableStream({
-      start(controller) {
-        stderrCtrl = controller;
-      },
-    });
-
-    this.stdout.readable.pipeTo(
+    this.stdout.tap(
       new WritableStream({
         write(chunk) {
-          console.log(`${new TextDecoder().decode(chunk)}`);
-          stdoutCtrl.enqueue(chunk);
-        },
-        close() {
-          stdoutCtrl.close();
-        },
-        abort(err) {
-          stdoutCtrl.error(err);
+          process.stdout.write(chunk);
         },
       }),
     );
 
-    this.stderr.readable.pipeTo(
+    this.stderr.tap(
       new WritableStream({
         write(chunk) {
-          console.error(`${new TextDecoder().decode(chunk)}`);
-          stderrCtrl.enqueue(chunk);
-        },
-        close() {
-          stderrCtrl.close();
-        },
-        abort(err) {
-          stderrCtrl.error(err);
+          process.stderr.write(chunk);
         },
       }),
     );
-
-    this.stdout = new ReadableTools(stdoutReadable);
-    this.stderr = new ReadableTools(stderrReadable);
 
     return this;
   }
