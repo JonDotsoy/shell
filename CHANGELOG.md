@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/JonDotsoy/shell/compare/v1.1.0...v1.2.0) (2025-09-09)
+
+
+### Features
+
+* enhance ReadableTools with tap method for stream duplication ([a42e773](https://github.com/JonDotsoy/shell/commit/a42e773f4db4b9a9c62cee06b09c91a3b5b498ba))
+
 ## [1.1.0](https://github.com/JonDotsoy/shell/compare/v1.0.2...v1.1.0) (2025-09-09)
 
 
