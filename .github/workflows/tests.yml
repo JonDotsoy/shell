@@ -23,3 +23,5 @@ jobs:
             deno 2.4.5
       - name: Install dependencies
         run: bun install
+      - name: Run tests
+        run: bun test
