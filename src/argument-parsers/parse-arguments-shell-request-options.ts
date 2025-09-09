@@ -3,7 +3,7 @@ import type { ShellRequestObjectOptions } from "../dtos/shell-request-object-opt
 import type { ShellRequestOptions } from "../dtos/shell-request-options.js";
 
 const filterString = <T>(value: T) =>
-  value instanceof ShellRequest ? null : (value as Exclude<T, string>);
+  typeof value === "string" ? null : (value as Exclude<T, string>);
 
 /**
  * Parses and normalizes shell request options from various input formats.

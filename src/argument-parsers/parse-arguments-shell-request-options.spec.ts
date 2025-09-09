@@ -109,15 +109,30 @@ describe("parseArgumentsShellRequestOptions", () => {
       expect(result.cwd).toBeUndefined();
       expect(result.signal).toBeUndefined();
     });
-  });
 
-  describe("ShellRequest instance format", () => {
-    test("should handle ShellRequest instance and return null for command", () => {
-      const shellRequest = new ShellRequest("test command");
+    test("should parse object with command, signal and custom stdin stream", () => {
+      const path = { pathname: "test-script.js" };
+      let stdoin: ReadableStreamDefaultController<any>;
 
-      expect(() => {
-        parseArgumentsShellRequestOptions([shellRequest]);
-      }).toThrow("Command must be a string");
+      const request = parseArgumentsShellRequestOptions([
+        {
+          command: `bun ${path.pathname}`,
+          signal: AbortSignal.timeout(500),
+          stdin: new ReadableStream({
+            start(controller) {
+              stdoin = controller;
+            },
+          }),
+        },
+      ]);
+
+      expect(request.command).toEqual("bun test-script.js");
+      expect(request.signal).toBeInstanceOf(AbortSignal);
+      expect(request.stdin).toBeInstanceOf(ReadableStream);
+      expect(stdoin!).toBeDefined();
+      expect(request.env).toBeUndefined();
+      expect(request.shell).toBeUndefined();
+      expect(request.cwd).toBeUndefined();
     });
   });
 
