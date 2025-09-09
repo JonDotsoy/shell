@@ -13,7 +13,7 @@ jobs:
       - uses: asdf-vm/actions/install@v4
         with:
           skip_install: true
-          tool_versions: false
+          tool_versions: "" # Using manual installation below
           # tool_versions: |
           #   nodejs 16.20.2
           #   nodejs 18.20.8
