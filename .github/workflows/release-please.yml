@@ -12,8 +12,11 @@ name: release-please
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release-please.outputs.releases_created }}
     steps:
       - uses: googleapis/release-please-action@v4
+        id: release-please
         with:
           # this assumes that you have created a personal access token
           # (PAT) and configured it as a GitHub action secret named
@@ -22,3 +25,21 @@ jobs:
           # this is a built-in strategy in release-please, see "Action Inputs"
           # for more options
           release-type: node
+
+  delivery-npm:
+    runs-on: ubuntu-latest
+    # if: needs.release-please.outputs.releases_created
+    needs:
+      - release-please
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          registry-url: "https://registry.npmjs.org"
+      - run: bun install
+      - run: npm publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
