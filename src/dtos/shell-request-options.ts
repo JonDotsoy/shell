@@ -1,5 +1,4 @@
 import type { ShellRequest } from "../shell-request.js";
-import type { ShellRequestObjectOptions } from "./shell-request-object-options.js";
 
 /**
  * Union type for different ways to specify shell request options.
