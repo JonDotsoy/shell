@@ -1,7 +1,7 @@
 {
   "name": "@jondotsoy/shell",
   "version": "0.1.0",
-  "module": "index.ts",
+  "module": "./libs/esm/shell.js",
   "type": "module",
   "main": "./libs/esm/shell.js",
   "types": "./libs/esm/shell.d.ts",
