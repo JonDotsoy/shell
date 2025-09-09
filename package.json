@@ -34,5 +34,11 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JonDotsoy/shell.git"
-  }
+  },
+  "license": "MIT",
+  "keywords": [
+    "shell",
+    "child_process",
+    "exec"
+  ]
 }
