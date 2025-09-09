@@ -25,3 +25,5 @@ jobs:
         run: bun install
       - name: Run tests
         run: bun test
+        env:
+          ENABLE_E2E_TESTS: true
