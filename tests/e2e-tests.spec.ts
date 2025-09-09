@@ -1,7 +1,11 @@
-import { describe, test, expect, beforeAll } from "bun:test";
+import { describe, test as t, expect, beforeAll } from "bun:test";
 import { tmpdir } from "os";
 import fs from "fs";
 import { shell as originalShell } from "../src/shell";
+
+const enableTests = process.env.ENABLE_E2E_TESTS === "true";
+
+const test = t.if(enableTests);
 
 const engines = {
   node: {
