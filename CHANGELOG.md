@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.1.0](https://github.com/JonDotsoy/shell/compare/v1.0.2...v1.1.0) (2025-09-09)
+
+
+### Features
+
+* add parseArgumentsShellRequestOptions function for shell request parsing ([12c7c0f](https://github.com/JonDotsoy/shell/commit/12c7c0fe8046d1bc0d339a8a699a208916fd9725))
+* add ReadableTools utility class for stream handling ([0604231](https://github.com/JonDotsoy/shell/commit/0604231881798f2698d101e78985629bd6f358d5))
+* add shell request and response options types ([58d4011](https://github.com/JonDotsoy/shell/commit/58d4011a7782f34551fe5caa8da823f0869a9722))
+* implement parseArgumentsShellResponseOptions for shell response normalization ([80f67cc](https://github.com/JonDotsoy/shell/commit/80f67ccfcb38a09b8998b1afa26a2b031b92fb72))
+* implement ShellRequest class for shell command configuration ([bcee29c](https://github.com/JonDotsoy/shell/commit/bcee29cd44d2c04980d888c4e707566ef5778ee9))
+* implement ShellResponse class for handling shell command responses ([b9e5ae7](https://github.com/JonDotsoy/shell/commit/b9e5ae74eff4635bc628c9a821ea361eca8254d3))
+
+
+### Bug Fixes
+
+* correct export statements for ShellRequest and ShellResponse ([2091f61](https://github.com/JonDotsoy/shell/commit/2091f61656d7a0bf64bb11059af380a95aa72187))
+* update filterString function to correctly identify string values ([a64c130](https://github.com/JonDotsoy/shell/commit/a64c1304439e6c7fd2af7f4cb90a3f1b9e99ed52))
+* update import statement for ShellRequest to correct module path ([e253eff](https://github.com/JonDotsoy/shell/commit/e253eff1bc4d24c1a9628966884865f30103160b))
+
 ## [1.0.2](https://github.com/JonDotsoy/shell/compare/v1.0.1...v1.0.2) (2025-09-09)
 
 
