@@ -1,0 +1,34 @@
+{
+  "name": "@jondotsoy/shell",
+  "version": "0.1.0",
+  "module": "index.ts",
+  "type": "module",
+  "main": "./libs/esm/shell.js",
+  "types": "./libs/esm/shell.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "libs/types/*"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "import": "./libs/esm/shell.js",
+      "types": "./libs/esm/shell.d.ts"
+    }
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prettier": "^3.6.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "scripts": {
+    "fmt": "prettier --write ."
+  },
+  "files": [
+    "libs"
+  ]
+}
