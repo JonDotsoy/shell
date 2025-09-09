@@ -16,15 +16,6 @@ jobs:
             nodejs 24.7.0
             bun 1.2.21
             deno 2.4.5
-          # tool_versions: |
-          #   nodejs 16.20.2
-          #   nodejs 18.20.8
-          #   nodejs 20.19.5
-          #   nodejs 22.19.0
-          #   nodejs 22.19.0
-          #   nodejs 24.7.0
-          #   bun 1.2.21
-          #   deno 2.4.5
       - uses: actions/cache@v4
         with:
           path: |
