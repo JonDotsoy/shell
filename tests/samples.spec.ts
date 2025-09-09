@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, test } from "bun:test";
 import fs from "fs";
-import { shell, ShellRequest } from "../src/shell.js";
+import { shell } from "../src/shell.js";
+import { ShellRequest } from "../src/shell-request.js";
 import type { ReadableStreamController } from "bun";
 
 /**
