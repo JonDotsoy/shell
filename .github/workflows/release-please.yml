@@ -28,7 +28,7 @@ jobs:
 
   delivery-npm:
     runs-on: ubuntu-latest
-    # if: needs.release-please.outputs.releases_created
+    if: needs.release-please.outputs.releases_created
     needs:
       - release-please
     permissions:
