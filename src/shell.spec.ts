@@ -1,5 +1,6 @@
 import { describe, test, expect } from "bun:test";
-import { ShellRequest, ShellResponse, StdioStream } from "./shell.js";
+import { ShellResponse } from "./shell-response.js";
+import { ShellRequest } from "./shell-request.js";
 
 describe("Workspace", () => {
   test("should create ShellRequest with command using object constructor", async () => {
@@ -100,64 +101,5 @@ describe("Workspace", () => {
     );
 
     expect(await response.json()).toEqual({ ok: true });
-  });
-
-  test("should create ShellResponse from StdioStream with stdout content", async () => {
-    const response = new ShellResponse(
-      new StdioStream({
-        stdout: new ReadableStream({
-          start(controller) {
-            controller.enqueue(`ok`);
-            controller.close();
-          },
-        }),
-      }),
-    );
-
-    expect(await response.text()).toEqual(`ok`);
-  });
-
-  test("should handle stderr content from StdioStream", async () => {
-    const response = new ShellResponse(
-      new StdioStream({
-        stdout: new ReadableStream({
-          start(controller) {
-            controller.close();
-          },
-        }),
-        stderr: new ReadableStream({
-          start(controller) {
-            controller.enqueue(`ok`);
-            controller.close();
-          },
-        }),
-      }),
-    );
-
-    expect(await response.text()).toEqual(``);
-    expect(await response.stderr.text()).toEqual(`ok`);
-  });
-
-  test("should create ShellResponse with complete stdio configuration and exit code", async () => {
-    const response = new ShellResponse({
-      stdio: new StdioStream({
-        stdout: new ReadableStream({
-          start(controller) {
-            controller.close();
-          },
-        }),
-        stderr: new ReadableStream({
-          start(controller) {
-            controller.enqueue(`ok`);
-            controller.close();
-          },
-        }),
-      }),
-      exitCode: Promise.resolve(0),
-    });
-
-    expect(await response.text()).toEqual(``);
-    expect(await response.stderr.text()).toEqual(`ok`);
-    expect(await response.exitCode).toBe(0);
   });
 });
