@@ -56,10 +56,10 @@ beforeAll(async () => {
   );
 });
 
-test("should work with Node.js Gallium (v16.20.2)", async () => {
+test(`should work with Node.js Gallium (v${engines.node.Gallium})`, async () => {
   const tmp = new URL(`file:${tmpdir()}/shell-e2e-tests-workspace/`);
   await shell(`rm -rf ${tmp.pathname} && mkdir -p ${tmp.pathname}`);
-  file(new URL(`.tool-versions`, tmp), `nodejs ${engines.node.Gallium}`);
+  await shell(`asdf set nodejs ${engines.node.Gallium}`, { cwd: tmp.pathname });
 
   file(
     new URL(`package.json`, tmp),
@@ -93,10 +93,12 @@ test("should work with Node.js Gallium (v16.20.2)", async () => {
   await shell(`node index.js`, { cwd: tmp.pathname });
 });
 
-test("should work with Node.js Hydrogen (v18.20.8)", async () => {
+test(`should work with Node.js Hydrogen (v${engines.node.Hydrogen})`, async () => {
   const tmp = new URL(`file:${tmpdir()}/shell-e2e-tests-workspace/`);
   await shell(`rm -rf ${tmp.pathname} && mkdir -p ${tmp.pathname}`);
-  file(new URL(`.tool-versions`, tmp), `nodejs ${engines.node.Hydrogen}`);
+  await shell(`asdf set nodejs ${engines.node.Hydrogen}`, {
+    cwd: tmp.pathname,
+  });
 
   file(
     new URL(`package.json`, tmp),
@@ -130,10 +132,10 @@ test("should work with Node.js Hydrogen (v18.20.8)", async () => {
   await shell(`node index.js`, { cwd: tmp.pathname });
 });
 
-test("should work with Node.js Iron (v20.19.5)", async () => {
+test(`should work with Node.js Iron (v${engines.node.Iron})`, async () => {
   const tmp = new URL(`file:${tmpdir()}/shell-e2e-tests-workspace/`);
   await shell(`rm -rf ${tmp.pathname} && mkdir -p ${tmp.pathname}`);
-  file(new URL(`.tool-versions`, tmp), `nodejs ${engines.node.Iron}`);
+  await shell(`asdf set nodejs ${engines.node.Iron}`, { cwd: tmp.pathname });
 
   file(
     new URL(`package.json`, tmp),
@@ -167,10 +169,10 @@ test("should work with Node.js Iron (v20.19.5)", async () => {
   await shell(`node index.js`, { cwd: tmp.pathname });
 });
 
-test("should work with Node.js Jod (v22.19.0)", async () => {
+test(`should work with Node.js Jod (v${engines.node.Jod})`, async () => {
   const tmp = new URL(`file:${tmpdir()}/shell-e2e-tests-workspace/`);
   await shell(`rm -rf ${tmp.pathname} && mkdir -p ${tmp.pathname}`);
-  file(new URL(`.tool-versions`, tmp), `nodejs ${engines.node.Jod}`);
+  await shell(`asdf set nodejs ${engines.node.Jod}`, { cwd: tmp.pathname });
 
   file(
     new URL(`package.json`, tmp),
@@ -204,10 +206,10 @@ test("should work with Node.js Jod (v22.19.0)", async () => {
   await shell(`node index.js`, { cwd: tmp.pathname });
 });
 
-test("should work with Node.js LTS (v22.19.0)", async () => {
+test(`should work with Node.js LTS (v${engines.node.LTS})`, async () => {
   const tmp = new URL(`file:${tmpdir()}/shell-e2e-tests-workspace/`);
   await shell(`rm -rf ${tmp.pathname} && mkdir -p ${tmp.pathname}`);
-  file(new URL(`.tool-versions`, tmp), `nodejs ${engines.node.LTS}`);
+  await shell(`asdf set nodejs ${engines.node.LTS}`, { cwd: tmp.pathname });
 
   file(
     new URL(`package.json`, tmp),
@@ -241,10 +243,10 @@ test("should work with Node.js LTS (v22.19.0)", async () => {
   await shell(`node index.js`, { cwd: tmp.pathname });
 });
 
-test("placeholder test - needs implementation", async () => {
+test(`placeholder test - needs implementation (v${engines.node.Latest})`, async () => {
   const tmp = new URL(`file:${tmpdir()}/shell-e2e-tests-workspace/`);
   await shell(`rm -rf ${tmp.pathname} && mkdir -p ${tmp.pathname}`);
-  file(new URL(`.tool-versions`, tmp), `nodejs ${engines.node.Latest}`);
+  await shell(`asdf set nodejs ${engines.node.Latest}`, { cwd: tmp.pathname });
 
   file(
     new URL(`package.json`, tmp),
@@ -278,10 +280,10 @@ test("placeholder test - needs implementation", async () => {
   await shell(`node index.js`, { cwd: tmp.pathname });
 });
 
-test("should work with Node.js Latest (v24.7.0) - duplicate test", async () => {
+test(`should work with Node.js Latest (v${engines.node.Latest}) - duplicate test`, async () => {
   const tmp = new URL(`file:${tmpdir()}/shell-e2e-tests-workspace/`);
   await shell(`rm -rf ${tmp.pathname} && mkdir -p ${tmp.pathname}`);
-  file(new URL(`.tool-versions`, tmp), `nodejs ${engines.node.Latest}`);
+  await shell(`asdf set nodejs ${engines.node.Latest}`, { cwd: tmp.pathname });
 
   file(
     new URL(`package.json`, tmp),
@@ -315,10 +317,10 @@ test("should work with Node.js Latest (v24.7.0) - duplicate test", async () => {
   await shell(`node index.js`, { cwd: tmp.pathname });
 });
 
-test("should work with Bun Latest (v1.2.21)", async () => {
+test(`should work with Bun Latest (v${engines.bun.Latest})`, async () => {
   const tmp = new URL(`file:${tmpdir()}/shell-e2e-tests-workspace/`);
   await shell(`rm -rf ${tmp.pathname} && mkdir -p ${tmp.pathname}`);
-  file(new URL(`.tool-versions`, tmp), `bun ${engines.bun.Latest}`);
+  await shell(`asdf set bun ${engines.bun.Latest}`, { cwd: tmp.pathname });
 
   file(
     new URL(`package.json`, tmp),
@@ -352,10 +354,10 @@ test("should work with Bun Latest (v1.2.21)", async () => {
   await shell(`bun index.js`, { cwd: tmp.pathname });
 });
 
-test("should work with Deno LTS (v2.4.5)", async () => {
+test(`should work with Deno LTS (v${engines.deno.LTS})`, async () => {
   const tmp = new URL(`file:${tmpdir()}/shell-e2e-tests-workspace/`);
   await shell(`rm -rf ${tmp.pathname} && mkdir -p ${tmp.pathname}`);
-  file(new URL(`.tool-versions`, tmp), `deno ${engines.deno.LTS}`);
+  await shell(`asdf set deno ${engines.deno.LTS}`, { cwd: tmp.pathname });
 
   file(
     new URL(`package.json`, tmp),
