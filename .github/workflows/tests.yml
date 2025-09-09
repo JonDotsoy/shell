@@ -10,12 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: asdf-vm/actions/install@v4
-        with:
-          tool_versions: |
-            nodejs 24.7.0
-            bun 1.2.21
-            deno 2.4.5
       - uses: actions/cache@v4
         with:
           path: |
@@ -23,6 +17,12 @@ jobs:
             ~/.asdf/installs
             ~/.asdf/plugins
           key: ${{ runner.os }}-asdf
+      - uses: asdf-vm/actions/install@v4
+        with:
+          tool_versions: |
+            nodejs 24.7.0
+            bun 1.2.21
+            deno 2.4.5
       - run: |
           asdf plugin add nodejs
           asdf plugin add bun
