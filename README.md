@@ -12,6 +12,17 @@ A powerful and flexible Node.js library for executing shell commands with full c
 - 🔄 **Stream Utilities** - Convenient methods for text, JSON, and stream processing
 - 🖥️ **Verbose Mode** - Optional console logging while preserving stream functionality
 - 🔁 **Composable Design** - Chain and combine commands with ease
+- 🔌 **Wrapper Pattern** - ShellRequest and ShellResponse classes wrap child process input/output traffic
+
+## How It Works
+
+The library implements a wrapper pattern around Node.js child processes:
+
+1. **Input Wrapping**: `ShellRequest` encapsulates all the configuration and input streams needed to spawn and communicate with a child process. This includes command text, stdin data, environment variables, working directory, and execution context.
+
+2. **Output Wrapping**: `ShellResponse` wraps the output streams (stdout, stderr) and exit code from the child process, providing a clean API for consuming command results while maintaining full access to the underlying streams.
+
+3. **Stream Management**: The library automatically handles the conversion between Node.js streams and Web Streams API, providing a modern interface while preserving compatibility and performance.
 
 ## Installation
 
@@ -69,6 +80,30 @@ if (exitCode === 0) {
 }
 ```
 
+### Using ShellRequest and ShellResponse Wrappers
+
+```typescript
+import { shell, ShellRequest, ShellResponse } from "@jondotsoy/shell";
+
+// Create a reusable command configuration with ShellRequest
+const buildRequest = new ShellRequest("npm run build", {
+  cwd: "/path/to/project",
+  env: { NODE_ENV: "production" },
+  shell: "/bin/bash",
+});
+
+// Execute the wrapped request
+const buildResponse: ShellResponse = shell(buildRequest);
+
+// The response wraps all child process output
+console.log("Build output:", await buildResponse.text());
+console.log("Build exit code:", await buildResponse.exitCode);
+
+// Access individual streams if needed
+const stdoutStream = buildResponse.stdout.readable;
+const stderrStream = buildResponse.stderr.readable;
+```
+
 ### Working with Streams
 
 ```typescript
@@ -109,10 +144,18 @@ try {
 ### Core Functions
 
 - **`shell(command, options?)`** - Execute shell commands
-- **`ShellRequest`** - Command configuration container
-- **`ShellResponse`** - Command execution result with streams
+- **`ShellRequest`** - Command configuration container that wraps input traffic to child processes
+- **`ShellResponse`** - Command execution result that wraps output traffic from child processes with streams
 - **`ReadableTools`** - Stream utility methods
 - **`StdioStream`** - Container for stdout/stderr streams
+
+### Architecture
+
+The shell library uses a wrapper-based architecture to handle child process communication:
+
+- **`ShellRequest`** encapsulates all input parameters and configuration needed to execute a command, including the command string, stdin stream, environment variables, working directory, shell type, and abort signals. This wrapper provides a clean interface for configuring how the child process should be started and what input it should receive.
+
+- **`ShellResponse`** wraps the output streams (stdout, stderr) and exit code from the spawned child process. It provides convenient methods for reading and processing the command output while maintaining access to the raw streams for advanced use cases. The response object acts as a bridge between the Node.js child process streams and the application layer.
 
 ### Key Features
 

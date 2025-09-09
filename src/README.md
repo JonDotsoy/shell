@@ -2,6 +2,14 @@
 
 The Shell module provides a powerful and flexible API for executing shell commands in Node.js applications. It offers stream-based command execution with full control over input/output streams, environment variables, and working directories.
 
+## Architecture Overview
+
+The Shell module implements a wrapper pattern around Node.js child processes to provide a clean and type-safe interface:
+
+- **`ShellRequest`** wraps all input traffic and configuration for child processes, including command text, stdin streams, environment variables, working directory, and execution context
+- **`ShellResponse`** wraps all output traffic from child processes, providing structured access to stdout, stderr streams, and exit codes
+- This wrapper approach abstracts the complexity of child process management while maintaining full control over streams and execution context
+
 ## Why This Module Exists
 
 Traditional Node.js approaches to shell command execution often fall short when dealing with complex scenarios involving streaming data, environment management, and execution context isolation. While `child_process.exec()` and similar APIs work for simple cases, they become cumbersome when you need fine-grained control over input/output streams, environment variables, or when working with multiple related commands in a specific context.
@@ -19,13 +27,31 @@ This module was created to bridge that gap by providing a modern, stream-first a
 
 ## Overview
 
-The shell module consists of several key components:
+The shell module consists of several key components that implement a wrapper pattern around child process communication:
 
 - **`shell()`** - Core function for executing shell commands
-- **`ShellRequest`** - Command configuration container
-- **`ShellResponse`** - Command execution result with streams
+- **`ShellRequest`** - Input wrapper that encapsulates command configuration and stdin traffic for child processes
+- **`ShellResponse`** - Output wrapper that encapsulates stdout/stderr streams and exit codes from child processes
 - **`ReadableTools`** - Utilities for working with streams
 - **`StdioStream`** - Container for stdout/stderr streams
+
+### Wrapper Pattern Implementation
+
+The library uses a two-layer wrapper approach:
+
+1. **Input Layer (`ShellRequest`)**: Wraps and validates all input parameters before creating the child process:
+   - Command string and shell configuration
+   - Input streams (stdin) that will be piped to the process
+   - Environment variables and working directory
+   - Abort signals for timeout and cancellation control
+
+2. **Output Layer (`ShellResponse`)**: Wraps and structures all output from the child process:
+   - Standard output (stdout) and error (stderr) streams
+   - Process exit codes and completion status
+   - Convenience methods for text and JSON parsing
+   - Verbose logging capabilities
+
+This pattern ensures type safety, provides a consistent API, and abstracts the complexity of managing child process lifecycle and stream handling.
 
 ## Quick Start
 
