@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import type { ShellRequestOptions } from "./dtos/shell-request-options.js";
 import { ShellRequest } from "./shell-request.js";
 import { ShellResponse } from "./shell-response.js";
+export { ReadableTools } from "./readable-tools.js";
 export { ShellRequest } from "./shell-request.js";
 export { ShellResponse } from "./shell-response.js";
 
