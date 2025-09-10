@@ -24,6 +24,186 @@ The library implements a wrapper pattern around Node.js child processes:
 
 3. **Stream Management**: The library automatically handles the conversion between Node.js streams and Web Streams API, providing a modern interface while preserving compatibility and performance.
 
+## Request/Response Pattern
+
+The `@jondotsoy/shell` library implements a sophisticated request/response pattern that abstracts the complexity of child process management while providing maximum flexibility and control. This pattern is inspired by HTTP request/response models but adapted for shell command execution.
+
+### ShellRequest: The Command Container
+
+The `ShellRequest` class acts as a comprehensive container for all the input parameters needed to execute a shell command. It encapsulates:
+
+```typescript
+import { ShellRequest } from "@jondotsoy/shell";
+
+const request = new ShellRequest("git status", {
+  cwd: "/path/to/repository",
+  env: { GIT_PAGER: "cat" },
+  shell: "/bin/bash",
+  signal: AbortSignal.timeout(10000),
+  stdin: new ReadableStream(), // Optional input stream
+});
+```
+
+**Key characteristics of ShellRequest:**
+
+- **Immutable Configuration**: Once created, the request configuration cannot be changed, ensuring predictable behavior
+- **Reusable**: The same request can be executed multiple times with consistent results
+- **Composable**: Requests can be created from other requests with modified parameters
+- **Type-Safe**: Full TypeScript support with comprehensive type checking
+- **Serializable**: Can be converted to/from plain objects for storage or transmission
+
+### ShellResponse: The Execution Result
+
+The `ShellResponse` class wraps the output and lifecycle of the executed command, providing both high-level convenience methods and low-level stream access:
+
+```typescript
+import { shell } from "@jondotsoy/shell";
+
+const response = shell("npm test");
+
+// High-level convenience methods
+const output = await response.text(); // Get all stdout as text
+const jsonData = await response.json(); // Parse stdout as JSON
+const exitCode = await response.exitCode; // Wait for command completion
+
+// Low-level stream access
+const stdoutStream = response.stdout.readable; // Raw stdout stream
+const stderrStream = response.stderr.readable; // Raw stderr stream
+
+// Real-time processing
+for await (const chunk of response.stdout.iterable()) {
+  console.log("Chunk received:", new TextDecoder().decode(chunk));
+}
+```
+
+**Key characteristics of ShellResponse:**
+
+- **Stream-First**: Built around Web Streams API for modern async processing
+- **Non-Blocking**: Methods return promises that resolve when data is available
+- **Memory Efficient**: Streams allow processing large outputs without loading everything into memory
+- **Error Aware**: Provides access to both stdout and stderr streams
+- **Lifecycle Management**: Tracks command execution state and completion
+
+### Pattern Benefits
+
+This request/response pattern provides several key advantages:
+
+#### 1. **Separation of Concerns**
+
+```typescript
+// Configure the command (what to run)
+const buildRequest = new ShellRequest("npm run build", {
+  cwd: "/project",
+  env: { NODE_ENV: "production" },
+});
+
+// Execute and handle results (how to process output)
+const buildResponse = shell(buildRequest);
+await buildResponse.exitCode; // Wait for completion
+```
+
+#### 2. **Reusability and Templating**
+
+```typescript
+// Create a template for database backups
+const backupTemplate = new ShellRequest("pg_dump", {
+  env: { PGPASSWORD: process.env.DB_PASSWORD },
+  shell: "/bin/bash",
+});
+
+// Use the template with different databases
+const prodBackup = shell(
+  backupTemplate.with({
+    command: "pg_dump production_db",
+  }),
+);
+const stagingBackup = shell(
+  backupTemplate.with({
+    command: "pg_dump staging_db",
+  }),
+);
+```
+
+#### 3. **Testability**
+
+```typescript
+// Mock or stub requests for testing
+class MockShellRequest extends ShellRequest {
+  constructor(command: string) {
+    super(command, { env: { MOCK: "true" } });
+  }
+}
+
+// Test different response scenarios
+const mockResponse = new ShellResponse(/* mock streams */);
+```
+
+#### 4. **Composability**
+
+```typescript
+// Chain commands using the response of one as input to another
+const listFiles = shell("find . -name '*.js'");
+const countFiles = shell("wc -l", {
+  stdin: listFiles.stdout.readable,
+});
+
+console.log("JavaScript files found:", await countFiles.text());
+```
+
+#### 5. **Resource Management**
+
+```typescript
+// Automatic cleanup and resource management
+const longRunningCommand = shell("npm run dev", {
+  signal: AbortSignal.timeout(60000), // Auto-cancel after 1 minute
+});
+
+// Resources are automatically cleaned up when the command completes or is cancelled
+```
+
+### Advanced Patterns
+
+#### Request Builders
+
+```typescript
+class DatabaseRequest extends ShellRequest {
+  static backup(database: string) {
+    return new DatabaseRequest(`pg_dump ${database}`, {
+      env: { PGPASSWORD: process.env.DB_PASSWORD },
+    });
+  }
+
+  static restore(database: string, file: string) {
+    return new DatabaseRequest(`psql ${database} < ${file}`, {
+      env: { PGPASSWORD: process.env.DB_PASSWORD },
+    });
+  }
+}
+```
+
+#### Response Processors
+
+```typescript
+class LoggedResponse extends ShellResponse {
+  verbose() {
+    super.verbose(); // Enable built-in verbose logging
+
+    // Add custom logging
+    this.stdout.readable.pipeTo(
+      new WritableStream({
+        write(chunk) {
+          logger.info("Command output:", new TextDecoder().decode(chunk));
+        },
+      }),
+    );
+
+    return this;
+  }
+}
+```
+
+This request/response pattern makes the library both powerful for complex use cases and simple for basic command execution, while maintaining type safety and predictable behavior throughout.
+
 ## Installation
 
 ```bash
