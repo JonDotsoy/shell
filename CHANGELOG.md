@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/JonDotsoy/shell/compare/v1.2.0...v1.2.1) (2025-09-10)
+
+
+### Bug Fixes
+
+* handle error events in shell command execution ([f9e7e2c](https://github.com/JonDotsoy/shell/commit/f9e7e2cd9ae1f46500f846a4a00a1a0ce0c470cb))
+* update cwd type to allow URL in ShellRequest and ShellRequestOptions ([376ff17](https://github.com/JonDotsoy/shell/commit/376ff172039c7b901528e48d64990e19fcd1479c))
+
 ## [1.2.0](https://github.com/JonDotsoy/shell/compare/v1.1.0...v1.2.0) (2025-09-09)
 
 
