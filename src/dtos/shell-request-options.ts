@@ -17,7 +17,7 @@ export type ShellRequestOptions =
         /** Shell to use for execution */
         shell?: string;
         /** Working directory for the command */
-        cwd?: string;
+        cwd?: string | URL;
         /** AbortSignal to control command cancellation and timeout */
         signal?: AbortSignal;
       },
@@ -33,7 +33,7 @@ export type ShellRequestOptions =
         /** Shell to use for execution */
         shell?: string;
         /** Working directory for the command */
-        cwd?: string;
+        cwd?: string | URL;
         /** AbortSignal to control command cancellation and timeout */
         signal?: AbortSignal;
       },
