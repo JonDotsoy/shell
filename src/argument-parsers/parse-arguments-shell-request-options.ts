@@ -1,4 +1,3 @@
-import { ShellRequest } from "../shell-request.js";
 import type { ShellRequestObjectOptions } from "../dtos/shell-request-object-options.js";
 import type { ShellRequestOptions } from "../dtos/shell-request-options.js";
 
