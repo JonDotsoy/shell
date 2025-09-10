@@ -131,8 +131,10 @@ describe("Workspace", () => {
 
     response.exitCode.catch(() => {}); // avoid console error logging
 
-    const [error] = await t(() => response.text());
+    const text = await response.text();
+    const err = await response.stderr.text();
 
-    expect(error).not.toBeUndefined();
+    expect(text).toBe("");
+    expect(err).toBe("");
   });
 });
