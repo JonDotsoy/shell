@@ -116,3 +116,52 @@ describe("JSON-RPC samples", () => {
     await response.exitCode;
   });
 });
+
+/**
+ * Test suite for command chaining and piping functionality.
+ *
+ * This test suite validates the shell's ability to chain multiple commands
+ * together using stdin/stdout piping, simulating Unix-style command pipelines.
+ * It demonstrates how output from one command can be used as input for the next.
+ */
+describe("chain-commands", () => {
+  /** Path to the temporary directory containing test files */
+  const path = new URL("./__samples__/chain-commands/", import.meta.url);
+
+  /**
+   * Setup phase: Creates a clean test environment with sample files.
+   *
+   * This setup:
+   * 1. Removes any existing test directory to ensure clean state
+   * 2. Creates a new directory structure
+   * 3. Adds a .gitignore file to ignore all files in the test directory
+   * 4. Creates three sample text files (a.txt, b.txt, c.txt) with different content
+   */
+  beforeAll(async () => {
+    fs.rmSync(path, { force: true, recursive: true });
+    fs.mkdirSync(path, { recursive: true });
+    fs.writeFileSync(new URL(".gitignore", path), "*");
+    fs.writeFileSync(new URL("a.txt", path), "Hello from A");
+    fs.writeFileSync(new URL("b.txt", path), "Hello from B");
+    fs.writeFileSync(new URL("c.txt", path), "Hello from C");
+  });
+
+  /**
+   * Test case: Validates command chaining with stdin/stdout piping.
+   *
+   * This test demonstrates a three-command pipeline:
+   * 1. `find . -name '*.txt'` - Finds all .txt files in the directory
+   * 2. `shasum -a 256` - Calculates SHA-256 checksums for the found files
+   * 3. `cat` - Displays the final output with verbose logging
+   *
+   * The test verifies that:
+   * - Commands can be chained using stdout.readable as stdin for subsequent commands
+   * - Data flows correctly through the pipeline
+   * - The shell properly handles multiple connected processes
+   */
+  test("should chain commands using stdin/stdout piping", async () => {
+    const a = shell("find . -name '*.txt'", { cwd: path.pathname });
+    const b = shell("shasum -a 256", { stdin: a.stdout.readable });
+    await shell("cat", { stdin: b.stdout.readable }).verbose().exitCode;
+  });
+});
