@@ -1,4 +1,8 @@
-import type { ReadableStreamController } from "bun";
+type ReadableStreamController<T> = {
+  enqueue(chunk: T): void;
+  error(err: unknown): void;
+  close(): void;
+};
 
 /**
  * Utility class for working with ReadableStream instances.
