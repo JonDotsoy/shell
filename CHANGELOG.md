@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/JonDotsoy/shell/compare/v1.2.1...v1.2.2) (2025-09-10)
+
+
+### Miscellaneous Chores
+
+* release 1.2.2 ([91ce3f3](https://github.com/JonDotsoy/shell/commit/91ce3f3bcb93b62552e6dd6efdf9a62258c8c4f0))
+
 ## [1.2.1](https://github.com/JonDotsoy/shell/compare/v1.2.0...v1.2.1) (2025-09-10)
 
 
