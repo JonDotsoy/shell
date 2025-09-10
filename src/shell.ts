@@ -79,6 +79,12 @@ export const shell = (
     exitCode.resolve(code ?? 0);
   });
 
+  p.addListener("error", (err) => {
+    exitCode.reject(err);
+    stdoutCtrl.error(err);
+    stderrCtrl.error(err);
+  });
+
   return new ShellResponse({
     stdio: {
       stdout: stdoutReadable,

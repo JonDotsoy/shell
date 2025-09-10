@@ -1,6 +1,17 @@
 import { describe, test, expect } from "bun:test";
 import { ShellResponse } from "./shell-response.js";
 import { ShellRequest } from "./shell-request.js";
+import { shell } from "./shell.js";
+
+const t = async <T>(
+  cb: () => Promise<T>,
+): Promise<[null, T] | [unknown, null]> => {
+  try {
+    return [null, await cb()];
+  } catch (error) {
+    return [error, null];
+  }
+};
 
 describe("Workspace", () => {
   test("should create ShellRequest with command using object constructor", async () => {
@@ -101,5 +112,27 @@ describe("Workspace", () => {
     );
 
     expect(await response.json()).toEqual({ ok: true });
+  });
+
+  test("should abort command execution when timeout signal is triggered", async () => {
+    const signal = AbortSignal.timeout(1);
+
+    const response = shell("sleep 5", { signal });
+
+    const [error] = await t(() => response.exitCode);
+
+    expect(error).not.toBeUndefined();
+  });
+
+  test("should abort text reading when timeout signal is triggered during command execution", async () => {
+    const signal = AbortSignal.timeout(1);
+
+    const response = shell("sleep 5", { signal });
+
+    response.exitCode.catch(() => {}); // avoid console error logging
+
+    const [error] = await t(() => response.text());
+
+    expect(error).not.toBeUndefined();
   });
 });
