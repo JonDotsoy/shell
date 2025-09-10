@@ -5,6 +5,28 @@ import { ShellResponse } from "./shell-response.js";
 export { ShellRequest } from "./shell-request.js";
 export { ShellResponse } from "./shell-response.js";
 
+type ReadableStreamController<T> = {
+  enqueue(chunk: T): void;
+  error(err: unknown): void;
+  close(): void;
+};
+
+const readableStreamWithController = <T>() => {
+  let controller!: null | ReadableStreamController<T>;
+
+  const readable = new ReadableStream<T>({
+    start(ctrl: ReadableStreamController<T>) {
+      controller = ctrl;
+    },
+  });
+
+  if (!controller) {
+    throw new Error("Unable to create readable stream with controller.");
+  }
+
+  return { readable, controller };
+};
+
 /**
  * Executes a shell command and returns a ShellResponse.
  * This is the core function for running shell commands with full control over streams and environment.
@@ -17,20 +39,11 @@ export const shell = (
   const shellRequest = new ShellRequest(...requestOptions); // validate request options
 
   const exitCode = Promise.withResolvers<number>();
-  let stdoutCtrl: ReadableStreamDefaultController<unknown>;
-  let stderrCtrl: ReadableStreamDefaultController<unknown>;
 
-  const stdoutReadable = new ReadableStream<unknown>({
-    start(controller) {
-      stdoutCtrl = controller;
-    },
-  });
-
-  const stderrReadable = new ReadableStream<unknown>({
-    start(controller) {
-      stderrCtrl = controller;
-    },
-  });
+  const { readable: stdoutReadable, controller: stdoutCtrl } =
+    readableStreamWithController<unknown>();
+  const { readable: stderrReadable, controller: stderrCtrl } =
+    readableStreamWithController<unknown>();
 
   const p = spawn(
     shellRequest.shell ?? "/bin/sh",
@@ -81,8 +94,6 @@ export const shell = (
 
   p.addListener("error", (err) => {
     exitCode.reject(err);
-    stdoutCtrl.error(err);
-    stderrCtrl.error(err);
   });
 
   return new ShellResponse({
