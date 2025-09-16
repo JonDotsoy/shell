@@ -127,15 +127,16 @@ describe("Workspace", () => {
   test("should abort text reading when timeout signal is triggered during command execution", async () => {
     const signal = AbortSignal.timeout(1);
 
+    const timestart = Date.now();
     const response = shell("sleep 5", { signal });
 
     response.exitCode.catch(() => {}); // avoid console error logging
 
-    const text = await response.text();
-    const err = await response.stderr.text();
+    await response.text();
+    await response.stderr.text();
+    const duration = Date.now() - timestart;
 
-    expect(text).toBe("");
-    expect(err).toBe("");
+    expect(duration).toBeLessThan(5000);
   });
 
   test("should pipe output from one command to another", async () => {
