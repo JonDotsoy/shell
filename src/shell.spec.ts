@@ -1,5 +1,5 @@
-import { describe, test, expect } from "bun:test";
-import { ShellResponse } from "./shell-response.js";
+import { describe, test, expect, expectTypeOf } from "bun:test";
+import { AwaitedShellResponse, ShellResponse } from "./shell-response.js";
 import { ShellRequest } from "./shell-request.js";
 import { shell } from "./shell.js";
 
@@ -136,5 +136,37 @@ describe("Workspace", () => {
 
     expect(text).toBe("");
     expect(err).toBe("");
+  });
+
+  test("should pipe output from one command to another", async () => {
+    const a = shell(new ShellRequest("echo a"));
+    const b = shell(new ShellRequest("cat", { stdin: a }));
+
+    const res = await b.text();
+
+    expect(res).toBe("a\n");
+  });
+
+  test("should ensure ShellResponse.exitCode returns a Promise<number> type", async () => {
+    const response = new ShellResponse();
+
+    expectTypeOf(response.exitCode).toEqualTypeOf<Promise<number>>();
+  });
+
+  test("should return AwaitedShellResponse type when awaiting ShellResponse", async () => {
+    const response = await new ShellResponse();
+
+    expectTypeOf(response).toEqualTypeOf<AwaitedShellResponse>();
+  });
+
+  test("should await command completion and not add delay on subsequent exitCode calls", async () => {
+    const starting = Date.now();
+    const response = await shell("sleep 1");
+    const durationFirst = Date.now() - starting;
+    await response.exitCode;
+    const durationSecond = Date.now() - starting;
+
+    expect(durationFirst).toBeGreaterThanOrEqual(1000);
+    expect(durationSecond).toBeGreaterThanOrEqual(1000);
   });
 });
