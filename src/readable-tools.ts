@@ -71,15 +71,12 @@ export class ReadableTools {
    * @returns Promise that resolves to the stream content as text
    */
   text = async (): Promise<string> => {
-    const lines = await Array.fromAsync(
-      ReadableTools.iterable(this.readable),
-      (chunk) => {
-        if (chunk instanceof Uint8Array) {
-          return new TextDecoder().decode(chunk);
-        }
-        return String(chunk);
-      },
-    );
+    const lines = await Array.fromAsync(this.iterable(), (chunk) => {
+      if (chunk instanceof Uint8Array) {
+        return new TextDecoder().decode(chunk);
+      }
+      return String(chunk);
+    });
     return lines.join("");
   };
 
@@ -90,6 +87,12 @@ export class ReadableTools {
   json = async (): Promise<any> => {
     return JSON.parse(await this.text());
   };
+
+  iterable = () => ReadableTools.iterable(this.readable);
+
+  async *[Symbol.asyncIterator]() {
+    yield* this.iterable();
+  }
 
   /**
    * Creates an async iterable from a ReadableStream.

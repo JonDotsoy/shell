@@ -91,4 +91,52 @@ describe("ReadableTools", () => {
     expect(push).toHaveBeenNthCalledWith(2, "line2\n");
     expect(push).toHaveBeenNthCalledWith(3, "line3");
   });
+
+  test("should allow async iteration over stream chunks using iterable() method", async () => {
+    const push = mock();
+
+    const rs = new ReadableStream({
+      start(controller) {
+        controller.enqueue("line1\n");
+        controller.enqueue("line2\n");
+        controller.enqueue("line3\n");
+        controller.close();
+      },
+    });
+
+    const readableTools = new ReadableTools(rs);
+
+    for await (const chunk of readableTools.iterable()) {
+      push(chunk);
+    }
+
+    expect(push).toHaveBeenCalledTimes(3);
+    expect(push).toHaveBeenNthCalledWith(1, "line1\n");
+    expect(push).toHaveBeenNthCalledWith(2, "line2\n");
+    expect(push).toHaveBeenNthCalledWith(3, "line3\n");
+  });
+
+  test("should allow async iteration directly over ReadableTools instance", async () => {
+    const push = mock();
+
+    const rs = new ReadableStream({
+      start(controller) {
+        controller.enqueue("line1\n");
+        controller.enqueue("line2\n");
+        controller.enqueue("line3\n");
+        controller.close();
+      },
+    });
+
+    const readableTools = new ReadableTools(rs);
+
+    for await (const chunk of readableTools) {
+      push(chunk);
+    }
+
+    expect(push).toHaveBeenCalledTimes(3);
+    expect(push).toHaveBeenNthCalledWith(1, "line1\n");
+    expect(push).toHaveBeenNthCalledWith(2, "line2\n");
+    expect(push).toHaveBeenNthCalledWith(3, "line3\n");
+  });
 });

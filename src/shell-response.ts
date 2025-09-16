@@ -2,14 +2,9 @@ import { parseArgumentsShellResponseOptions } from "./argument-parsers/parse-arg
 import type { ShellResponseOptions } from "./dtos/shell-response-options.js";
 import { ReadableTools } from "./readable-tools.js";
 
-/**
- * Represents the response from a shell command execution.
- * Provides access to stdout, stderr streams and the exit code.
- */
-
-export class ShellResponse {
+export class AwaitedShellResponse {
   /** Promise that resolves to the process exit code */
-  exitCode: Promise<number>;
+  exitCode: number;
 
   /** Standard output stream with utility methods */
   stdout: ReadableTools;
@@ -20,11 +15,75 @@ export class ShellResponse {
    * Creates a new ShellResponse instance.
    * @param options - Stream configurations and exit code promise
    */
+  constructor(options: {
+    stdio?: { stdout?: ReadableTools; stderr?: ReadableTools };
+    exitCode?: number;
+  }) {
+    const stdio = options?.stdio;
+    const exitCode = options?.exitCode;
+
+    this.stdout = stdio?.stdout ?? new ReadableTools(new ReadableStream({}));
+    this.stderr = stdio?.stderr ?? new ReadableTools(new ReadableStream({}));
+    this.exitCode = exitCode ?? 0;
+  }
+
+  /**
+   * Convenience method to get stdout content as text.
+   * @returns Promise that resolves to stdout content as a string
+   */
+  text() {
+    return this.stdout.text();
+  }
+
+  /**
+   * Convenience method to parse stdout content as JSON.
+   * @returns Promise that resolves to parsed JSON from stdout
+   */
+  json() {
+    return this.stdout.json();
+  }
+}
+
+/**
+ * Represents the response from a shell command execution.
+ * Provides access to stdout, stderr streams and the exit code.
+ */
+export class ShellResponse {
+  /** Promise that resolves to the process exit code */
+  exitCode: Promise<number>;
+
+  /** Standard output stream with utility methods */
+  stdout: ReadableTools;
+  /** Standard error stream with utility methods */
+  stderr: ReadableTools;
+
+  #promiseAwaitedShellResponse?: Promise<AwaitedShellResponse>;
+
+  /**
+   * Creates a new ShellResponse instance.
+   * @param options - Stream configurations and exit code promise
+   */
   constructor(...options: ShellResponseOptions) {
     const { stdio, exitCode } = parseArgumentsShellResponseOptions(options);
     this.stdout = new ReadableTools(stdio?.stdout ?? new ReadableStream({}));
     this.stderr = new ReadableTools(stdio?.stderr ?? new ReadableStream({}));
     this.exitCode = exitCode ?? Promise.resolve(0);
+  }
+
+  get then() {
+    this.#promiseAwaitedShellResponse ??= this.exitCode.then((code) => {
+      return new AwaitedShellResponse({
+        stdio: {
+          stdout: this.stdout,
+          stderr: this.stderr,
+        },
+        exitCode: code,
+      });
+    });
+
+    return this.#promiseAwaitedShellResponse.then.bind(
+      this.#promiseAwaitedShellResponse,
+    );
   }
 
   /**
