@@ -63,6 +63,42 @@ shell({ command: "echo hello", cwd: "/path" });
 shell(new ShellRequest("echo hello", { cwd: "/path" }));
 ```
 
+### Await Shell Syntax
+
+The `shell()` function returns a `ShellResponse` that implements the thenable pattern, making it directly awaitable. When you await a `ShellResponse`, it automatically waits for command completion and returns an `AwaitedShellResponse` instance with the resolved exit code:
+
+```typescript
+// Traditional approach - manual promise handling
+const response = shell("echo hello");
+const output = await response.text();
+const exitCode = await response.exitCode;
+
+// New await syntax - automatic command completion
+const result = await shell("echo hello");
+console.log(result.exitCode); // Already resolved number, not a Promise
+console.log(await result.text()); // Same stream methods available
+```
+
+**Key differences with `await shell(...)`:**
+
+- **Automatic waiting**: The command execution is automatically awaited
+- **Resolved exit code**: `exitCode` is a number instead of a Promise
+- **Same stream access**: stdout, stderr, and utility methods remain available
+- **Error handling**: Command failures can be caught with try/catch blocks
+
+```typescript
+try {
+  const result = await shell("npm test");
+  if (result.exitCode === 0) {
+    console.log("Tests passed!");
+  } else {
+    console.log("Tests failed with exit code:", result.exitCode);
+  }
+} catch (error) {
+  console.error("Command execution failed:", error);
+}
+```
+
 ### Stream-First Architecture
 
 The library is built around web-standard ReadableStream and WritableStream APIs:
@@ -94,10 +130,16 @@ This pattern ensures type safety, provides a consistent API, and abstracts the c
 ```typescript
 import { shell } from "@jondotsoy/shell";
 
-// Simple command execution
+// Simple command execution (traditional)
 const response = shell('echo "Hello World"');
 const output = await response.text();
 console.log(output); // "Hello World"
+
+// Simple command execution (await syntax)
+const result = await shell('echo "Hello World"');
+const output = await result.text();
+console.log(output); // "Hello World"
+console.log(result.exitCode); // 0 (already resolved)
 ```
 
 ### Using shell() with Custom Configuration
@@ -123,11 +165,21 @@ import { shell } from "@jondotsoy/shell";
 // Create an AbortSignal with timeout
 const signal = AbortSignal.timeout(5000); // 5 seconds
 
-// Command will timeout after 5 seconds
+// Traditional approach
 const response = shell("sleep 10", { signal }); // Will be aborted after 5 seconds
 
 try {
   await response.exitCode;
+} catch (error) {
+  if (error.name === "AbortError") {
+    console.log("Command timed out");
+  }
+}
+
+// Await syntax
+try {
+  const result = await shell("sleep 10", { signal });
+  console.log("Command completed with exit code:", result.exitCode);
 } catch (error) {
   if (error.name === "AbortError") {
     console.log("Command timed out");
@@ -247,6 +299,42 @@ const response = shell("npm install").verbose();
 await response.exitCode; // Output will be logged to console
 ```
 
+### `AwaitedShellResponse`
+
+Represents the resolved result when awaiting a `ShellResponse`. This class is returned when you use `await shell(...)` syntax.
+
+#### Properties
+
+- `exitCode` (number) - The resolved process exit code (not a Promise)
+- `stdout` (ReadableTools) - Enhanced standard output stream
+- `stderr` (ReadableTools) - Enhanced standard error stream
+
+#### Methods
+
+##### `text()`
+
+Returns stdout content as text (convenience method).
+
+```typescript
+const result = await shell("echo hello");
+const output = await result.text();
+```
+
+##### `json()`
+
+Parses stdout content as JSON (convenience method).
+
+```typescript
+const result = await shell("npm list --json");
+const data = await result.json();
+```
+
+**Key difference from ShellResponse:**
+
+- `exitCode` is already resolved as a number, not a Promise
+- All stream methods work the same way
+- Represents a completed command execution state
+
 ### `ReadableTools`
 
 Enhanced utility class for working with ReadableStream instances, providing advanced stream processing capabilities.
@@ -346,12 +434,24 @@ console.log(output); // "Hello from env!"
 ### Handling Command Errors
 
 ```typescript
+// Traditional approach
 const response = shell("nonexistent-command");
 
 try {
   const exitCode = await response.exitCode;
   if (exitCode !== 0) {
     const errorOutput = await response.stderr.text();
+    console.error("Command failed:", errorOutput);
+  }
+} catch (error) {
+  console.error("Execution error:", error);
+}
+
+// Await syntax approach
+try {
+  const result = await shell("nonexistent-command");
+  if (result.exitCode !== 0) {
+    const errorOutput = await result.stderr.text();
     console.error("Command failed:", errorOutput);
   }
 } catch (error) {
@@ -490,7 +590,7 @@ try {
 ### Batch Operations
 
 ```typescript
-// Multiple related commands with shared configuration
+// Multiple related commands with shared configuration (traditional)
 const baseOptions = {
   cwd: "/path/to/project",
   env: { NODE_ENV: "production" },
@@ -508,28 +608,107 @@ for (const command of commands) {
     break;
   }
 }
+
+// Using await syntax
+for (const command of commands) {
+  console.log(`Running: ${command}`);
+  try {
+    const result = await shell(command, baseOptions).verbose();
+    if (result.exitCode !== 0) {
+      console.error(`Command failed with exit code ${result.exitCode}`);
+      break;
+    }
+  } catch (error) {
+    console.error(`Command failed with error:`, error);
+    break;
+  }
+}
 ```
 
 ### JSON Processing
 
 ```typescript
+// Traditional approach
 const response = shell("npm list --json --depth=0");
 const packageInfo = await response.json();
 
 console.log("Dependencies:", Object.keys(packageInfo.dependencies || {}));
+
+// Await syntax
+const result = await shell("npm list --json --depth=0");
+const packageInfo = await result.json();
+
+console.log("Dependencies:", Object.keys(packageInfo.dependencies || {}));
+console.log("Command exit code:", result.exitCode);
 ```
 
 ## Advanced Usage
+
+### Using Await Syntax for Simplified Error Handling
+
+The `await shell(...)` syntax provides cleaner error handling patterns and automatic command completion:
+
+```typescript
+import { shell } from "@jondotsoy/shell";
+
+// Complex workflow with await syntax
+async function deployApplication() {
+  try {
+    // All commands automatically wait for completion
+    const testResult = await shell("npm test");
+    console.log(`Tests completed with exit code: ${testResult.exitCode}`);
+
+    if (testResult.exitCode !== 0) {
+      throw new Error("Tests failed");
+    }
+
+    const buildResult = await shell("npm run build");
+    console.log(`Build completed with exit code: ${buildResult.exitCode}`);
+
+    if (buildResult.exitCode !== 0) {
+      throw new Error("Build failed");
+    }
+
+    const deployResult = await shell("npm run deploy");
+    console.log(`Deploy completed with exit code: ${deployResult.exitCode}`);
+
+    return deployResult.exitCode === 0;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      console.error("Operation timed out");
+    } else {
+      console.error("Deployment failed:", error.message);
+    }
+    return false;
+  }
+}
+
+// Usage
+const success = await deployApplication();
+console.log("Deployment", success ? "succeeded" : "failed");
+```
 
 ### Advanced Timeout and Signal Handling
 
 ```typescript
 import { shell, ShellRequest } from "@jondotsoy/shell";
 
-// Method 1: Using AbortSignal.timeout for automatic timeout
+// Method 1: Using AbortSignal.timeout for automatic timeout (traditional)
 const response1 = shell("long-running-command", {
   signal: AbortSignal.timeout(10000), // 10 seconds
 });
+
+// Method 1: Using await syntax
+try {
+  const result1 = await shell("long-running-command", {
+    signal: AbortSignal.timeout(10000),
+  });
+  console.log("Command completed:", result1.exitCode);
+} catch (error) {
+  if (error.name === "AbortError") {
+    console.log("Command timed out");
+  }
+}
 
 // Method 2: Manual control with AbortController
 const controller = new AbortController();
@@ -550,7 +729,7 @@ const request = new ShellRequest("complex-command", {
 
 const response3 = shell(request);
 
-// Handle all timeout scenarios
+// Handle all timeout scenarios with traditional approach
 try {
   const result = await Promise.race([
     response3.text(),
@@ -564,6 +743,22 @@ try {
   } else {
     console.error("Command failed:", error);
   }
+}
+
+// Await syntax approach for multiple commands
+const commands = [
+  shell("command1", { signal: AbortSignal.timeout(10000) }),
+  shell("command2", { signal: AbortSignal.timeout(15000) }),
+  shell("command3", { signal: AbortSignal.timeout(20000) }),
+];
+
+try {
+  const results = await Promise.all(commands);
+  results.forEach((result, index) => {
+    console.log(`Command ${index + 1} exit code:`, result.exitCode);
+  });
+} catch (error) {
+  console.error("One or more commands failed:", error);
 }
 ```
 
@@ -667,6 +862,7 @@ import {
   shell,
   ShellRequest,
   ShellResponse,
+  AwaitedShellResponse,
   ReadableTools,
 } from "@jondotsoy/shell";
 
@@ -675,6 +871,11 @@ const response: ShellResponse = shell("echo test");
 const output: Promise<string> = response.text();
 const exitCode: Promise<number> = response.exitCode;
 const stdout: ReadableTools = response.stdout;
+
+// Await syntax types
+const result: AwaitedShellResponse = await shell("echo test");
+const resolvedExitCode: number = result.exitCode; // Already resolved
+const awaitedOutput: Promise<string> = result.text();
 
 // Generic type support for JSON parsing
 interface PackageInfo {
@@ -685,6 +886,10 @@ interface PackageInfo {
 
 const packageResponse = shell("npm list --json --depth=0");
 const packageInfo: PackageInfo = await packageResponse.json();
+
+// Using await syntax for JSON parsing
+const awaitedResult = await shell("npm list --json --depth=0");
+const packageData: PackageInfo = await awaitedResult.json();
 
 // Type-safe request construction
 const request: ShellRequest = new ShellRequest("echo hello", {
@@ -713,14 +918,26 @@ const request: ShellRequest = new ShellRequest("echo hello", {
 - Multiple commands can run concurrently
 - Use Promise.all() for parallel execution
 - Each command runs in its own isolated process context
+- The await syntax works seamlessly with Promise combinators
 
 ```typescript
-// Efficient parallel execution
+// Efficient parallel execution (traditional)
 const [status, tests, build] = await Promise.all([
   shell("git status").text(),
   shell("npm test").exitCode,
   shell("npm run build").exitCode,
 ]);
+
+// Efficient parallel execution (await syntax)
+const [statusResult, testResult, buildResult] = await Promise.all([
+  shell("git status"),
+  shell("npm test"),
+  shell("npm run build"),
+]);
+
+console.log("Git status:", await statusResult.text());
+console.log("Test exit code:", testResult.exitCode);
+console.log("Build exit code:", buildResult.exitCode);
 ```
 
 ## Platform Support
