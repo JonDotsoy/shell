@@ -13,6 +13,7 @@ A powerful and flexible Node.js library for executing shell commands with full c
 - 🖥️ **Verbose Mode** - Optional console logging while preserving stream functionality
 - 🔁 **Composable Design** - Chain and combine commands with ease
 - 🔌 **Wrapper Pattern** - ShellRequest and ShellResponse classes wrap child process input/output traffic
+- ⚡ **Await Support** - Direct await syntax for simplified command execution
 
 ## How It Works
 
@@ -233,6 +234,11 @@ import { shell } from "@jondotsoy/shell";
 const response = shell('echo "Hello World"');
 const output = await response.text();
 console.log(output); // "Hello World"
+
+// Or use await directly for automatic completion
+const result = await shell('echo "Hello World"');
+const output2 = await result.text();
+console.log(output2); // "Hello World"
 ```
 
 ### Advanced Usage
