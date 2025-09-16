@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/JonDotsoy/shell/compare/v1.2.2...v1.3.0) (2025-09-16)
+
+
+### Features
+
+* enhance ShellRequestOptions to support ShellResponse and improve stream handling ([e92d8ec](https://github.com/JonDotsoy/shell/commit/e92d8ec9dc9988cb622b39273e74aa6e6d3ea3e7))
+* implement AwaitedShellResponse for improved shell command handling ([5763adf](https://github.com/JonDotsoy/shell/commit/5763adf54f3ec6342f971df795569bd9de6173fe))
+* implement thenable interface and async iteration for enhanced shell command experience ([5808c46](https://github.com/JonDotsoy/shell/commit/5808c46270e9768e7a45165a3f641e930f6f078b))
+
+
+### Bug Fixes
+
+* export ReadableTools for improved module accessibility ([c8dc466](https://github.com/JonDotsoy/shell/commit/c8dc46603eb97e1705fdbe5daffb26d9e2448791))
+
 ## [1.2.2](https://github.com/JonDotsoy/shell/compare/v1.2.1...v1.2.2) (2025-09-10)
 
 
