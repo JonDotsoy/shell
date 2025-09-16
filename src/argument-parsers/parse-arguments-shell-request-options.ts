@@ -1,5 +1,6 @@
 import type { ShellRequestObjectOptions } from "../dtos/shell-request-object-options.js";
 import type { ShellRequestOptions } from "../dtos/shell-request-options.js";
+import { ShellResponse } from "../shell-response.js";
 
 const filterString = <T>(value: T) =>
   typeof value === "string" ? null : (value as Exclude<T, string>);
@@ -27,7 +28,10 @@ export const parseArgumentsShellRequestOptions = (
   if (typeof commandOrObjectOptions === "string") {
     return {
       command: commandOrObjectOptions,
-      stdin: objectOptions?.stdin,
+      stdin:
+        objectOptions?.stdin instanceof ShellResponse
+          ? objectOptions.stdin.stdout.readable
+          : objectOptions?.stdin,
       env: objectOptions?.env,
       shell: objectOptions?.shell,
       cwd: objectOptions?.cwd,
@@ -41,7 +45,10 @@ export const parseArgumentsShellRequestOptions = (
       filteredCommand?.command,
       () => new Error("Command must be a string"),
     ),
-    stdin: filteredCommand?.stdin,
+    stdin:
+      filteredCommand?.stdin instanceof ShellResponse
+        ? filteredCommand.stdin.stdout.readable
+        : filteredCommand?.stdin,
     env: filteredCommand?.env,
     shell: filteredCommand?.shell,
     cwd: filteredCommand?.cwd,

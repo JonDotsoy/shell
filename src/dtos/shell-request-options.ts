@@ -1,4 +1,5 @@
 import type { ShellRequest } from "../shell-request.js";
+import type { ShellResponse } from "../shell-response.js";
 
 /**
  * Union type for different ways to specify shell request options.
@@ -11,7 +12,7 @@ export type ShellRequestOptions =
       string,
       {
         /** Input stream to pipe to the command */
-        stdin?: ReadableStream;
+        stdin?: ReadableStream | ShellResponse;
         /** Environment variables for the command */
         env?: Record<string, string>;
         /** Shell to use for execution */
@@ -27,7 +28,7 @@ export type ShellRequestOptions =
         /** Command to execute */
         command: string;
         /** Input stream to pipe to the command */
-        stdin?: ReadableStream;
+        stdin?: ReadableStream | ShellResponse;
         /** Environment variables for the command */
         env?: Record<string, string>;
         /** Shell to use for execution */
