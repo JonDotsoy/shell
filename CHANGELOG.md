@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/JonDotsoy/shell/compare/v1.3.0...v1.4.0) (2025-09-17)
+
+
+### Features
+
+* enhance shell request options parsing and validation ([e766a2c](https://github.com/JonDotsoy/shell/commit/e766a2ce6881b836d16559d03aef1623f2e847ef))
+
+
+### Bug Fixes
+
+* update ShellRequest instantiation and streamline command chaining ([1c8d64a](https://github.com/JonDotsoy/shell/commit/1c8d64ab26a19aad17adfa48a0771a52aff6a285))
+
 ## [1.3.0](https://github.com/JonDotsoy/shell/compare/v1.2.2...v1.3.0) (2025-09-16)
 
 
