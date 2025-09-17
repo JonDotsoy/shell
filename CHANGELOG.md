@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/JonDotsoy/shell/compare/v1.4.0...v1.4.1) (2025-09-17)
+
+
+### Bug Fixes
+
+* enhance shell request options to support ReadableTools ([da11969](https://github.com/JonDotsoy/shell/commit/da119693681efda3f3c64a863ab99ad12d52b704))
+
 ## [1.4.0](https://github.com/JonDotsoy/shell/compare/v1.3.0...v1.4.0) (2025-09-17)
 
 
