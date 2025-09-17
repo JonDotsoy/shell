@@ -1,10 +1,12 @@
 import type { ShellRequestObjectOptions } from "../dtos/shell-request-object-options.js";
 import type { ShellRequestOptions } from "../dtos/shell-request-options.js";
+import { ReadableTools } from "../readable-tools.js";
 import { ShellResponse } from "../shell-response.js";
 
 const toReadableTools = <T>(value: T): ReadableStream | undefined => {
   if (value instanceof ShellResponse) return value.stdout.readable;
   if (value instanceof ReadableStream) return value;
+  if (value instanceof ReadableTools) return value.readable;
   return;
 };
 

@@ -1,3 +1,4 @@
+import type { ReadableTools } from "../readable-tools.js";
 import type { ShellRequest } from "../shell-request.js";
 import type { ShellResponse } from "../shell-response.js";
 
@@ -11,7 +12,7 @@ export type ShellRequestOptions =
       string,
       {
         /** Input stream to pipe to the command */
-        stdin?: ReadableStream | ShellResponse;
+        stdin?: ReadableStream | ReadableTools | ShellResponse;
         /** Environment variables for the command */
         env?: Record<string, string>;
         /** Shell to use for execution */
@@ -28,7 +29,7 @@ export type ShellRequestOptions =
         /** Command to execute */
         command?: string;
         /** Input stream to pipe to the command */
-        stdin?: ReadableStream | ShellResponse;
+        stdin?: ReadableStream | ReadableTools | ShellResponse;
         /** Environment variables for the command */
         env?: Record<string, string>;
         /** Shell to use for execution */
@@ -44,7 +45,7 @@ export type ShellRequestOptions =
         /** Command to execute */
         command: string;
         /** Input stream to pipe to the command */
-        stdin?: ReadableStream | ShellResponse;
+        stdin?: ReadableStream | ReadableTools | ShellResponse;
         /** Environment variables for the command */
         env?: Record<string, string>;
         /** Shell to use for execution */

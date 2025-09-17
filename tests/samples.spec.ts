@@ -200,4 +200,24 @@ describe("chain-commands", () => {
       console.log("Found:", text.trim());
     }
   });
+
+  /**
+   * Test case: Validates command chaining with direct stdout piping for file counting.
+   *
+   * This test demonstrates:
+   * 1. Using `find` to locate all JavaScript files in the directory
+   * 2. Piping the output directly via stdout property to `wc -l` to count files
+   * 3. Reading the final count and displaying the result
+   *
+   * This test differs from the previous counting test by using `stdout` directly
+   * instead of passing the entire shell response object as stdin.
+   */
+  test("should count JavaScript files using direct stdout piping", async () => {
+    const listFiles = shell("find . -name '*.js'");
+    const countFiles = shell("wc -l", {
+      stdin: listFiles.stdout,
+    });
+
+    console.log("JavaScript files found:", await countFiles.text());
+  });
 });
