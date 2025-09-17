@@ -114,12 +114,12 @@ const backupTemplate = new ShellRequest("pg_dump", {
 
 // Use the template with different databases
 const prodBackup = shell(
-  backupTemplate.with({
+  new ShellRequest(backupTemplate, {
     command: "pg_dump production_db",
   }),
 );
 const stagingBackup = shell(
-  backupTemplate.with({
+  new ShellRequest(backupTemplate, {
     command: "pg_dump staging_db",
   }),
 );
@@ -145,7 +145,7 @@ const mockResponse = new ShellResponse(/* mock streams */);
 // Chain commands using the response of one as input to another
 const listFiles = shell("find . -name '*.js'");
 const countFiles = shell("wc -l", {
-  stdin: listFiles.stdout.readable,
+  stdin: listFiles,
 });
 
 console.log("JavaScript files found:", await countFiles.text());
@@ -299,7 +299,7 @@ import { shell, ReadableTools } from "@jondotsoy/shell";
 const response = shell('find . -name "*.js"');
 
 // Process output as it arrives
-for await (const chunk of ReadableTools.iterable(response.stdout.readable)) {
+for await (const chunk of response.stdout) {
   const text = new TextDecoder().decode(chunk);
   console.log("Found:", text.trim());
 }
