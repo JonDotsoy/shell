@@ -164,4 +164,40 @@ describe("chain-commands", () => {
     const b = shell("shasum -a 256", { stdin: a.stdout.readable });
     await shell("cat", { stdin: b.stdout.readable }).verbose().exitCode;
   });
+
+  /**
+   * Test case: Validates command chaining by finding and counting JavaScript files.
+   *
+   * This test demonstrates:
+   * 1. Using `find` to locate all JavaScript files in the directory
+   * 2. Piping the output to `wc -l` to count the number of files found
+   * 3. Reading the final count as text output
+   */
+  test("should count JavaScript files using command chaining", async () => {
+    const listFiles = shell("find . -name '*.js'");
+    const countFiles = shell("wc -l", {
+      stdin: listFiles,
+    });
+
+    console.log("JavaScript files found:", await countFiles.text());
+  });
+
+  /**
+   * Test case: Validates streaming output processing for real-time file discovery.
+   *
+   * This test demonstrates:
+   * 1. Using `find` to locate JavaScript files in the directory
+   * 2. Processing output chunks as they arrive using async iteration
+   * 3. Decoding and logging each chunk in real-time without buffering
+   */
+  test("should process streaming output for JavaScript file discovery", async () => {
+    // Stream processing
+    const response = shell('find . -name "*.js"');
+
+    // Process output as it arrives
+    for await (const chunk of response.stdout) {
+      const text = new TextDecoder().decode(chunk);
+      console.log("Found:", text.trim());
+    }
+  });
 });
