@@ -225,11 +225,11 @@ describe("parseArgumentsShellRequestOptions", () => {
       ]);
 
       expect(result.command).toEqual("test command");
-      expect(result.stdin).toBeNull();
-      expect(result.env).toBeNull();
-      expect(result.shell).toBeNull();
-      expect(result.cwd).toBeNull();
-      expect(result.signal).toBeNull();
+      expect(result.stdin).toBeUndefined();
+      expect(result.env).toBeUndefined();
+      expect(result.shell).toBeUndefined();
+      expect(result.cwd).toBeUndefined();
+      expect(result.signal).toBeUndefined();
     });
   });
 });
