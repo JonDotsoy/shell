@@ -2,16 +2,15 @@ import type { ShellRequestObjectOptions } from "../dtos/shell-request-object-opt
 import type { ShellRequestOptions } from "../dtos/shell-request-options.js";
 import { ShellResponse } from "../shell-response.js";
 
-const filterString = <T>(value: T) =>
-  typeof value === "string" ? null : (value as Exclude<T, string>);
-
 const toReadableTools = <T>(value: T): ReadableStream | undefined => {
   if (value instanceof ShellResponse) return value.stdout.readable;
   if (value instanceof ReadableStream) return value;
   return;
 };
 
-const pre = (args: ShellRequestOptions): ShellRequestObjectOptions => {
+const prepareShellRequestObjectOptions = (
+  args: ShellRequestOptions,
+): ShellRequestObjectOptions => {
   const [commandOrObjectOptions, objectOptions] = args;
 
   const o =
@@ -40,9 +39,9 @@ const pre = (args: ShellRequestOptions): ShellRequestObjectOptions => {
 export const parseArgumentsShellRequestOptions = (
   args: ShellRequestOptions,
 ): ShellRequestObjectOptions => {
-  const obj = pre(args);
-  if (typeof obj.command !== "string") {
+  const shellRequestObjectOptions = prepareShellRequestObjectOptions(args);
+  if (typeof shellRequestObjectOptions.command !== "string") {
     throw new Error("Command must be a string");
   }
-  return obj;
+  return shellRequestObjectOptions;
 };
