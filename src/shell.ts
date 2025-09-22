@@ -103,5 +103,6 @@ export const shell = (
       stderr: stderrReadable,
     },
     exitCode: exitCode.promise,
+    pid: p.pid,
   });
 };

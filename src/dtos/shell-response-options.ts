@@ -10,6 +10,7 @@ export type ShellResponseOptions =
       {
         stdio?: { stderr?: ReadableStream };
         exitCode?: number | Promise<number>;
+        pid?: number;
       },
     ]
   | [
@@ -17,11 +18,13 @@ export type ShellResponseOptions =
       {
         stdio?: { stderr?: ReadableStream };
         exitCode?: number | Promise<number>;
+        pid?: number;
       },
     ]
   | [
       {
         stdio?: { stdout?: ReadableStream; stderr?: ReadableStream };
         exitCode?: number | Promise<number>;
+        pid?: number;
       },
     ];
