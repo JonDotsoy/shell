@@ -48,6 +48,7 @@ export const parseArgumentsShellResponseOptions = (
   const stderr: ReadableStream | undefined =
     filteredStream?.stdio?.stderr ?? objectOptions?.stdio?.stderr;
   const exitCode = filteredStream?.exitCode ?? objectOptions?.exitCode;
+  const pid = filteredStream?.pid ?? objectOptions?.pid;
 
   return {
     stdio: {
@@ -56,5 +57,6 @@ export const parseArgumentsShellResponseOptions = (
     },
     exitCode:
       typeof exitCode === "number" ? Promise.resolve(exitCode) : exitCode,
+    pid: pid,
   };
 };

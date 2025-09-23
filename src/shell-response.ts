@@ -56,6 +56,8 @@ export class ShellResponse {
   stdout: ReadableTools;
   /** Standard error stream with utility methods */
   stderr: ReadableTools;
+  /** Process ID of the spawned shell command, if available */
+  pid?: number;
 
   #promiseAwaitedShellResponse?: Promise<AwaitedShellResponse>;
 
@@ -64,10 +66,12 @@ export class ShellResponse {
    * @param options - Stream configurations and exit code promise
    */
   constructor(...options: ShellResponseOptions) {
-    const { stdio, exitCode } = parseArgumentsShellResponseOptions(options);
+    const { stdio, exitCode, pid } =
+      parseArgumentsShellResponseOptions(options);
     this.stdout = new ReadableTools(stdio?.stdout ?? new ReadableStream({}));
     this.stderr = new ReadableTools(stdio?.stderr ?? new ReadableStream({}));
     this.exitCode = exitCode ?? Promise.resolve(0);
+    this.pid = pid;
   }
 
   get then() {

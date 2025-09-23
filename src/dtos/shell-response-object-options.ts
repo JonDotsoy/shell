@@ -11,4 +11,6 @@ export type ShellResponseObjectOptions = {
   };
   /** Promise that resolves to the process exit code */
   exitCode?: Promise<number>;
+  /** Process ID */
+  pid?: number;
 };
