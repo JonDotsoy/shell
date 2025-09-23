@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/JonDotsoy/shell/compare/v1.4.2...v1.4.3) (2025-09-23)
+
+
+### Bug Fixes
+
+* add pid property to ShellResponse and ShellResponseObjectOptions for process tracking ([b83fa48](https://github.com/JonDotsoy/shell/commit/b83fa484c73024fe342da5b04af017bdbf9865f2))
+
 ## [1.4.2](https://github.com/JonDotsoy/shell/compare/v1.4.1...v1.4.2) (2025-09-22)
 
 

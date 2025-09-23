@@ -1,6 +1,6 @@
 {
   "name": "@jondotsoy/shell",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "module": "./libs/esm/shell.js",
   "type": "module",
   "main": "./libs/esm/shell.js",
